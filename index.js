@@ -5,6 +5,10 @@ const express = require("express");
 const bodyParser = require('body-parser');
 //const moment = require('moment');
 const nodemailer = require("nodemailer");
+const fs = require('fs');
+const { promisify } = require('util');
+
+const readFileAsync = promisify(fs.readFile);
 
 const app = express();
 app.use(bodyParser.json());
@@ -14,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/sendtoclients', async (req, res) => {
   const { name, email, message, subject } = req.body;
+  const imageAttachment = await readFileAsync('conf_image.jpeg');
   try {
     const transporter = nodemailer.createTransport({
       host: 'mail.limpopoinvestmentconference.co.za',
@@ -45,7 +50,14 @@ app.post('/sendtoclients', async (req, res) => {
       <p> RSVP link: <a href='https://www.lieda.co.za/rsvp/index.php?token=1bbb3ac11ba699f1c6b5937e85cd2279f8fbb6b842b6174200c9cd9ec7a2920c' target='_blank'>https://www.lieda.co.za/rsvp/index.php?token=1bbb3ac11ba699f1c6b5937e85cd2279f8fbb6b842b6174200c9cd9ec7a2920c</a></p></br>
       <p>Regards</p></br>
 
-      <p>Limpopo Economic Development Agency Team.</p>`,
+      <p>Limpopo Economic Development Agency Team.</p>
+      <img style="aspect-ratio: 3 / 4; width:560px; height:430px;" src="cid:uniqueImageCID" alt="Embedded Image">`,
+      attachments: [{
+        filename: 'conf_image.jpeg',
+        content: imageAttachment,
+        encoding: 'base64',
+        cid: 'uniqueImageCID',
+    }],
       
     }).then(() => {
       res.status(200).json({ message: "email deliverd" });
