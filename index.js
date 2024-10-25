@@ -1,7 +1,7 @@
 require('dotenv').config();
 const axios = require("axios");
 const express = require("express");
-//const cors = require("cors");
+const cors = require("cors");
 const bodyParser = require('body-parser');
 //const moment = require('moment');
 const nodemailer = require("nodemailer");
@@ -11,6 +11,7 @@ const { promisify } = require('util');
 const readFileAsync = promisify(fs.readFile);
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
